@@ -143,7 +143,7 @@ export default function PowerShellScriptDesigner() {
             <CardTitle className="text-2xl font-bold">PowerShell Script Designer</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="p-4 bg-blue-50 text-blue-800 text-sm">
+            <div className="p-4 bg-blue-50 text-blue-800 text-sm rounded-b-md">
               Build PowerShell scripts visually by selecting commands and configuring parameters.
             </div>
           </CardContent>
