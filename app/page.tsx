@@ -13,6 +13,7 @@ import ExecutionPanel from "@/components/custom/execution-panel"
 import CommandPanel from "@/components/custom/command-panel"
 import ParameterPanel from "@/components/custom/parameter-panel"
 import ScriptAssemblyArea from "@/components/custom/script-assembly-area"
+import { Button } from "@/components/ui/button"
 
 export default function PowerShellScriptDesigner() {
   const [selectedCommand, setSelectedCommand] = useState<Command | null>(null)
@@ -137,7 +138,7 @@ export default function PowerShellScriptDesigner() {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="container mx-auto p-4 max-w-7xl">
-        <Card className="mb-6 border-0 shadow-sm">
+        <Card className="mb-6 p-0 rounded-md border-0 shadow-sm">
           <CardHeader className="pb-2 pt-6 px-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
             <CardTitle className="text-2xl font-bold">PowerShell Script Designer</CardTitle>
           </CardHeader>
@@ -197,19 +198,20 @@ export default function PowerShellScriptDesigner() {
                   <TabsContent value="export" className="mt-4">
                     <div className="rounded-md p-4 bg-muted">
                       <div className="flex flex-col gap-4">
-                        <button
+                        <Button
                           onClick={handleExportScript}
-                          className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90"
+                          variant="outline"
                         >
                           Save as .ps1 File
-                        </button>
+                        </Button>
 
-                        <button
+                        <Button
+                          variant="link"
                           onClick={handleCopyToClipboard}
-                          className="bg-secondary text-secondary-foreground px-4 py-2 rounded-md hover:bg-secondary/90"
+                          
                         >
                           Copy to Clipboard
-                        </button>
+                        </Button>
 
                         <div className="mt-2">
                           <label
