@@ -1,18 +1,18 @@
 "use client"
 
 import { Play } from "lucide-react"
-import type { Command } from "@/lib/types"
+import type { Command, CommandParameters } from "@/lib/types"
 
 interface ExecutionPanelProps {
-  scriptCommands: Command[]
+  scriptCommands: Array<Command & { parameters: CommandParameters }>
   onRunScript: () => void
 }
 
 export default function ExecutionPanel({ scriptCommands, onRunScript }: ExecutionPanelProps) {
   const scriptText = scriptCommands
     .map((cmd) => {
-      const params = Object.entries(cmd.parameters || {})
-        .filter(([_, value]) => value !== undefined && value !== "")
+      const params = Object.entries(cmd.parameters)
+        .filter(([, value]) => value !== undefined && value !== "")
         .map(([key, value]) => `-${key} ${value}`)
         .join(" ")
 

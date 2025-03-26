@@ -6,26 +6,23 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import type { Command, Parameter } from "@/lib/types"
+import type { Command, Parameter, CommandParameters } from "@/lib/types"
 import { Card, CardContent } from "@/components/ui/card"
 
 interface ParameterPanelProps {
   command: Command
-  onAddToScript: (command: Command) => void
+  onAddToScript: (command: Command & { parameters: CommandParameters }) => void
 }
 
 export default function ParameterPanel({ command, onAddToScript }: ParameterPanelProps) {
-  const [parameters, setParameters] = useState<Record<string, string>>(
-    command.parameters?.reduce(
-      (acc, param) => {
-        acc[param.name] = param.defaultValue || ""
-        return acc
-      },
-      {} as Record<string, string>,
-    ) || {},
+  const [parameters, setParameters] = useState<CommandParameters>(
+    command.parameters?.reduce((acc, param) => {
+      acc[param.name] = param.defaultValue !== undefined ? param.defaultValue : ""
+      return acc
+    }, {} as CommandParameters) || {},
   )
 
-  const handleParameterChange = (name: string, value: string) => {
+  const handleParameterChange = (name: string, value: string | number | boolean | undefined) => {
     setParameters({
       ...parameters,
       [name]: value,
@@ -35,6 +32,7 @@ export default function ParameterPanel({ command, onAddToScript }: ParameterPane
   const handleAddToScript = () => {
     onAddToScript({
       ...command,
+      //@ts-expect-error stupid imports from dnd erroring
       parameters,
     })
   }
@@ -79,12 +77,20 @@ export default function ParameterPanel({ command, onAddToScript }: ParameterPane
   )
 }
 
-function renderParameterInput(param: Parameter, value: any, onChange: (value: any) => void) {
+function renderParameterInput(
+  param: Parameter,
+  value: string | number | boolean | undefined,
+  onChange: (value: string | number | boolean | undefined) => void,
+) {
   switch (param.type) {
     case "boolean":
       return (
         <div className="flex items-center space-x-2">
-          <Checkbox id={param.name} checked={value === true} onCheckedChange={onChange} />
+          <Checkbox
+            id={param.name}
+            checked={value === true}
+            onCheckedChange={(checked) => onChange(checked === true)}
+          />
           <Label htmlFor={param.name}>Enabled</Label>
         </div>
       )
@@ -93,7 +99,7 @@ function renderParameterInput(param: Parameter, value: any, onChange: (value: an
       return (
         <select
           id={param.name}
-          value={value}
+          value={value as string}
           onChange={(e) => onChange(e.target.value)}
           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
@@ -112,7 +118,7 @@ function renderParameterInput(param: Parameter, value: any, onChange: (value: an
           <Input
             id={param.name}
             type="text"
-            value={value}
+            value={value as string}
             onChange={(e) => onChange(e.target.value)}
             placeholder={param.placeholder || `Enter ${param.name}`}
           />
@@ -129,12 +135,26 @@ function renderParameterInput(param: Parameter, value: any, onChange: (value: an
         </div>
       )
 
+    case "number":
+      return (
+        <Input
+          id={param.name}
+          type="number"
+          value={value as number}
+          onChange={(e) => {
+            const numValue = e.target.value === "" ? undefined : Number(e.target.value)
+            onChange(numValue)
+          }}
+          placeholder={param.placeholder || `Enter ${param.name}`}
+        />
+      )
+
     default:
       return (
         <Input
           id={param.name}
           type="text"
-          value={value}
+          value={value as string}
           onChange={(e) => onChange(e.target.value)}
           placeholder={param.placeholder || `Enter ${param.name}`}
         />
